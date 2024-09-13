@@ -12,4 +12,3 @@ public class TgBotMicroserviceApplication {
         SpringApplication.run(TgBotMicroserviceApplication.class, args);
     }
 }
-//123
