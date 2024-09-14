@@ -1,0 +1,17 @@
+version: '3'
+
+volumes:
+  todo:
+
+services:
+  todo:
+    image: 'postgres:latest'
+    container_name: 'todo'
+    ports:
+      - "5432:5432"
+    environment:
+      - 'POSTGRES_USER=postgres'
+      - 'POSTGRES_PASSWORD=postgrespw'
+      - 'POSTGRES_DB=db_todo'
+    volumes:
+      - todo:/var/lib/postgresql/data
