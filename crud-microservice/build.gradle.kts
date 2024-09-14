@@ -14,9 +14,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.projectlombok:lombok:1.18.34")
-    implementation("org.postgresql:postgresql:42.6.0")
-    implementation("org.hibernate.orm:hibernate-core:6.2.10.Final")
-    implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
+    implementation("org.postgresql:postgresql")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
