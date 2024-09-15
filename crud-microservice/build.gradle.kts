@@ -23,7 +23,7 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 
-    implementation("io.swagger.core.v3:swagger-annotations:2.2.22")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
 
 }
 

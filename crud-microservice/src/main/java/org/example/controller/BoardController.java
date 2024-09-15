@@ -12,30 +12,30 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("board")
+@RequestMapping("/board")
 public class BoardController {
 
     @Autowired
     private final BoardService boardService;
 
-    @PostMapping("add")
+    @PostMapping("/add")
     public ResponseEntity addBoard(@RequestBody BoardDto boardDto) {
         boardService.createBoard(boardDto);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("get")
+    @GetMapping("/get")
     public List<BoardDto> getBoardByUserChatId(Long userChatId) {
         return boardService.getBoardsByChatId(userChatId);
     }
 
-    @PostMapping("update")
+    @PostMapping("/update")
     public ResponseEntity updateBoardTitle(@RequestBody UpdateBoardTitleDto updateBoardTitleDto) {
         boardService.updateBoardTitle(updateBoardTitleDto.getTitle(), updateBoardTitleDto.getId());
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("delete")
+    @DeleteMapping("/delete")
     public ResponseEntity deleteBoard(Long boardId) {
         boardService.deleteBoard(boardId);
         return ResponseEntity.ok().build();
