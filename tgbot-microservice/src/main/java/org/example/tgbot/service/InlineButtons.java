@@ -1,5 +1,6 @@
 package org.example.tgbot.service;
 
+import org.example.tgbot.model.dto.BoardDto;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -9,7 +10,7 @@ import java.util.List;
 
 public class InlineButtons {
 
-    public static SendMessage sendBoards(Long chatId) {
+    public static SendMessage sendBoards(Long chatId, List<BoardDto> boards) {
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
         message.setText("Ваши доски:");
@@ -18,8 +19,9 @@ public class InlineButtons {
 
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 
-        for (int i = 0; i < 5; i++) {
-            rowsInline.add(getInlineKeyboardButtons(i));
+        for (BoardDto board : boards) {
+            rowsInline.add(getInlineKeyboardButtonsTitle(board));
+            rowsInline.add(getInlineKeyboardButtonsActions(board));
         }
 
         List<InlineKeyboardButton> addRow = new ArrayList<>();
@@ -37,19 +39,25 @@ public class InlineButtons {
         return message;
     }
 
-    private static List<InlineKeyboardButton> getInlineKeyboardButtons(int i) {
+    private static List<InlineKeyboardButton> getInlineKeyboardButtonsTitle(BoardDto board) {
         List<InlineKeyboardButton> boardRow = new ArrayList<>();
 
-        var button = new InlineKeyboardButton("Доска " + i);
-        button.setCallbackData("board" + i);
-
-        var buttonEdit = new InlineKeyboardButton("\uD83D\uDCDD");
-        buttonEdit.setCallbackData("editBoard" + i);
-
-        var buttonDelete = new InlineKeyboardButton("❌");
-        buttonDelete.setCallbackData("deleteBoard" + i);
+        var button = new InlineKeyboardButton(board.getTitle());
+        button.setCallbackData(board.getId().toString());
 
         boardRow.add(button);
+        return boardRow;
+    }
+
+    private static List<InlineKeyboardButton> getInlineKeyboardButtonsActions(BoardDto board) {
+        List<InlineKeyboardButton> boardRow = new ArrayList<>();
+
+        var buttonEdit = new InlineKeyboardButton("\uD83D\uDCDD");
+        buttonEdit.setCallbackData("edit." + board.getId());
+
+        var buttonDelete = new InlineKeyboardButton("❌");
+        buttonDelete.setCallbackData("delete." + board.getId());
+
         boardRow.add(buttonEdit);
         boardRow.add(buttonDelete);
         return boardRow;

@@ -1,6 +1,7 @@
 package org.example.tgbot.service;
 
 
+import org.example.tgbot.model.dto.BoardDto;
 import org.example.tgbot.props.TgBotProperties;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -14,6 +15,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 public class TgBotService extends TelegramLongPollingBot {
@@ -32,30 +34,47 @@ public class TgBotService extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
 
         if (update.hasMessage() && update.getMessage().hasText()) {
-            try {
-                execute(InlineButtons.sendBoards(update.getMessage().getChatId()));
+            var text = update.getMessage().getText();
+
+            if (Pattern.matches("^add.+", text)) {
+                crudService.addBoard(new BoardDto(0L, update.getMessage().getChatId(), text.substring(3)));
+                executeMessage(InlineButtons.sendBoards(update.getMessage().getChatId(), crudService.getBoards(update.getMessage().getChatId())));
             }
-            catch (Exception e) {
-                e.printStackTrace();
+
+            if (text.equals("Посмотреть доски")) {
+                executeMessage(InlineButtons.sendBoards(update.getMessage().getChatId(), crudService.getBoards(update.getMessage().getChatId())));
             }
         }
         if (update.hasCallbackQuery()) {
 
-            var message = new SendMessage();
-            message.setChatId(update.getCallbackQuery().getMessage().getChatId());
+            if (update.getCallbackQuery().getData().equals("add")){
+
+                var addMessage = new SendMessage();
+                addMessage.setChatId(update.getCallbackQuery().getMessage().getChatId());
+                addMessage.setText("Введите название новой доски в формате \"addНазвание доски\"");
+                executeMessage(addMessage);
+
+                //crudService.addBoard(new BoardDto(0L, update.getMessage().getChatId(), ));
+
+                //executeMessage(InlineButtons.sendBoards(update.getMessage().getChatId(), crudService.getBoards(update.getMessage().getChatId())));
+            }
+
+            //var message = new SendMessage();
+            //message.setChatId(update.getCallbackQuery().getMessage().getChatId());
             //message.setText(update.getCallbackQuery().getData());
 
-            try {
 
-                message.setText(crudService.getBoards());
-                execute(message);
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
         }
     }
 
+    private void executeMessage(SendMessage message) {
+        try {
+            execute(message);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 
 

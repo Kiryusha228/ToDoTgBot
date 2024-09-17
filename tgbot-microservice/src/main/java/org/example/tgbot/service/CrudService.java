@@ -1,12 +1,15 @@
 package org.example.tgbot.service;
 
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import org.example.tgbot.model.dto.BoardDto;
 import org.example.tgbot.props.LinkProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -16,10 +19,16 @@ public class CrudService {
     @Autowired
     private final LinkProperties linkProperties;
 
-    public String getBoards() {
+    public List<BoardDto> getBoards(Long userChatId) {
 
         var uri = UriComponentsBuilder.fromUriString(linkProperties.getCrudMicroserviceUrl() +  "/board")
-                .queryParam("userChatId", 1).toUriString();
-        return restTemplate.getForObject(uri, String.class);
+                .queryParam("userChatId", userChatId).toUriString();
+        return Arrays.stream(restTemplate.getForObject(uri, BoardDto[].class)).toList();
+    }
+
+    public void addBoard(BoardDto boardDto) {
+        var uri = UriComponentsBuilder.fromUriString(linkProperties.getCrudMicroserviceUrl() +  "/board/add")
+                .queryParam("board", boardDto).toUriString();
+        restTemplate.postForObject(uri, boardDto, BoardDto.class);
     }
 }
