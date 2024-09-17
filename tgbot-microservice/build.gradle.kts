@@ -17,7 +17,8 @@ dependencies {
     implementation("org.telegram:telegrambots:6.9.7.1")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.projectlombok:lombok:1.18.34")
-    implementation ("org.postgresql:postgresql:42.2.23")
+    annotationProcessor("org.projectlombok:lombok:1.18.34")
+    implementation ("org.postgresql:postgresql")
     implementation ("org.hibernate:hibernate-core:5.6.0.Final")
     implementation ("jakarta.persistence:jakarta.persistence-api:2.2.3")
 }

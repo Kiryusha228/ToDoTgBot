@@ -19,10 +19,13 @@ import java.util.List;
 public class TgBotService extends TelegramLongPollingBot {
 
     private final TgBotProperties tgBotProperties;
+    private final CrudService crudService;
 
-    public TgBotService(TgBotProperties tgBotProperties) {
+
+    public TgBotService(TgBotProperties tgBotProperties, CrudService crudService) {
         super(tgBotProperties.getToken());
         this.tgBotProperties = tgBotProperties;
+        this.crudService = crudService;
     }
 
     @Override
@@ -40,8 +43,11 @@ public class TgBotService extends TelegramLongPollingBot {
 
             var message = new SendMessage();
             message.setChatId(update.getCallbackQuery().getMessage().getChatId());
-            message.setText(update.getCallbackQuery().getData());
+            //message.setText(update.getCallbackQuery().getData());
+
             try {
+
+                message.setText(crudService.getBoards());
                 execute(message);
             }
             catch (Exception e) {
@@ -96,4 +102,6 @@ public class TgBotService extends TelegramLongPollingBot {
     public String getBotUsername() {
         return tgBotProperties.getName();
     }
+
+
 }
