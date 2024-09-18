@@ -44,7 +44,7 @@ public class TodoController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/switch")
+    @PutMapping("/switch")
     public ResponseEntity switchTodoDone(Long todoId){
         todoService.switchTodoDone(todoId);
         return ResponseEntity.ok().build();

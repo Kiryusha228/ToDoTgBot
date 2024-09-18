@@ -47,7 +47,24 @@ public class TgBotService extends TelegramLongPollingBot {
         }
         if (update.hasCallbackQuery()) {
 
-            if (update.getCallbackQuery().getData().equals("add")){
+            var callbackData = update.getCallbackQuery().getData();
+
+            if (Pattern.matches("^board:\\d+", callbackData)){
+                var todos = crudService.getTodos(Long.parseLong(callbackData.split(":")[1]));
+                executeMessage(InlineButtons.sendTodos(update.getCallbackQuery().getMessage().getChatId(), todos));
+            }
+
+            if (Pattern.matches("^todo:\\d+:\\d+", callbackData)){
+                var todoId = Long.parseLong(callbackData.split(":")[1]);
+                var boardId = Long.parseLong(callbackData.split(":")[2]);
+
+                crudService.switchTodoDone(todoId);
+                var todos = crudService.getTodos(boardId);
+
+                executeMessage(InlineButtons.sendTodos(update.getCallbackQuery().getMessage().getChatId(), todos));
+            }
+
+            if (callbackData.equals("addboard")){
 
                 var addMessage = new SendMessage();
                 addMessage.setChatId(update.getCallbackQuery().getMessage().getChatId());
