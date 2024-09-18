@@ -24,6 +24,9 @@ public class TodoEntity {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "done")
+    private Boolean done;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id", nullable = false)
     private BoardEntity board;

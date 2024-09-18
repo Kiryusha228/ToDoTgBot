@@ -7,12 +7,10 @@ import lombok.Setter;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
 @Setter
-public class TodoDto {
+@Getter
+public class UpdateTodoDto {
     private Long id;
-    private Long boardId;
-    private String title;
     private String description;
-    private Boolean done;
+    private String title;
 }
