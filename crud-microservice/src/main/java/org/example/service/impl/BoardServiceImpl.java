@@ -26,6 +26,11 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    public BoardDto getBoardById(Long boardId) {
+        return BoardMapper.ToBoardDto(boardRepository.findById(boardId).get());
+    }
+
+    @Override
     public void createBoard(BoardDto boardDto) {
 
         boardRepository.save(BoardMapper.ToBoardEntity(boardDto));

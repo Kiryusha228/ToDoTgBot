@@ -13,10 +13,12 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("board")
+@CrossOrigin(origins = {"*"})
 public class BoardController {
 
     @Autowired
     private final BoardService boardService;
+
 
     @PostMapping("/add")
     public ResponseEntity addBoard(@RequestBody BoardDto boardDto) {
@@ -25,9 +27,15 @@ public class BoardController {
     }
 
     @GetMapping
-    public List<BoardDto> getBoardByUserChatId(Long userChatId) {
+    public List<BoardDto> getBoardsByUserChatId(Long userChatId) {
         return boardService.getBoardsByChatId(userChatId);
     }
+
+    @GetMapping("/get")
+    public BoardDto getBoardById(Long boardId) {
+        return boardService.getBoardById(boardId);
+    }
+
 
     @PatchMapping("/update")
     public ResponseEntity updateBoardTitle(@RequestBody UpdateBoardTitleDto updateBoardTitleDto) {
