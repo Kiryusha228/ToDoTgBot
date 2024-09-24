@@ -1,12 +1,10 @@
 package org.example.service.impl;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.example.mapper.BoardMapper;
 import org.example.model.dto.BoardDto;
 import org.example.repository.BoardRepository;
 import org.example.service.BoardService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

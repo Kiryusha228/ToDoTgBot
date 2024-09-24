@@ -20,8 +20,7 @@ public class TgBotConfig {
         try {
             var tgApi = new TelegramBotsApi(DefaultBotSession.class);
             tgApi.registerBot(bot);
-        }
-        catch (TelegramApiException ex) {
+        } catch (TelegramApiException ex) {
             ex.printStackTrace();
         }
     }

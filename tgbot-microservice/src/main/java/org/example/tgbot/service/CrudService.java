@@ -1,8 +1,6 @@
 package org.example.tgbot.service;
 
-import jakarta.ws.rs.HttpMethod;
 import lombok.AllArgsConstructor;
-import org.apache.http.HttpEntity;
 import org.example.tgbot.model.dto.BoardDto;
 import org.example.tgbot.model.dto.TodoDto;
 import org.example.tgbot.props.LinkProperties;
@@ -11,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.http.HttpHeaders;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,28 +21,42 @@ public class CrudService {
     private final LinkProperties linkProperties;
 
     public List<BoardDto> getBoards(Long userChatId) {
-        var uri = UriComponentsBuilder.fromUriString(linkProperties.getCrudMicroserviceUrl() +  "/board")
+        var uri = UriComponentsBuilder.fromUriString(linkProperties.getCrudMicroserviceUrl() + "/board")
                 .queryParam("userChatId", userChatId).toUriString();
         return Arrays.stream(restTemplate.getForObject(uri, BoardDto[].class)).toList();
     }
 
-    public void addBoard(BoardDto boardDto) {
-        var uri = UriComponentsBuilder.fromUriString(linkProperties.getCrudMicroserviceUrl() +  "/board/add")
-                .queryParam("board", boardDto).toUriString();
-        restTemplate.postForObject(uri, boardDto, BoardDto.class);
+    public void deleteBoard(Long boardId) {
+        var uri = UriComponentsBuilder.fromUriString(linkProperties.getCrudMicroserviceUrl() + "/board/delete")
+                .queryParam("boardId", boardId).toUriString();
+        restTemplate.delete(uri);
     }
 
     public List<TodoDto> getTodos(Long boardId) {
-        var uri = UriComponentsBuilder.fromUriString(linkProperties.getCrudMicroserviceUrl() +  "/todo")
+        var uri = UriComponentsBuilder.fromUriString(linkProperties.getCrudMicroserviceUrl() + "/todo")
                 .queryParam("boardId", boardId).toUriString();
         return Arrays.stream(restTemplate.getForObject(uri, TodoDto[].class)).toList();
     }
 
-    public void switchTodoDone(Long todoId){
-        var uri = UriComponentsBuilder.fromUriString(linkProperties.getCrudMicroserviceUrl() +  "/todo/switch")
+    public TodoDto getTodoById(Long todoId) {
+        var uri = UriComponentsBuilder.fromUriString(linkProperties.getCrudMicroserviceUrl() + "/todo/get")
+                .queryParam("todoId", todoId).toUriString();
+        return restTemplate.getForObject(uri, TodoDto.class);
+    }
+
+    public void deleteTodo(Long todoId) {
+        var uri = UriComponentsBuilder.fromUriString(linkProperties.getCrudMicroserviceUrl() + "/todo/delete")
+                .queryParam("todoId", todoId).toUriString();
+        restTemplate.delete(uri);
+    }
+
+    public void switchTodoDone(Long todoId) {
+        var uri = UriComponentsBuilder.fromUriString(linkProperties.getCrudMicroserviceUrl() + "/todo/switch")
                 .queryParam("todoId", todoId).toUriString();
         restTemplate.put(uri, void.class);
         //restTemplate.patchForObject(uri, null, Void.class);
     }
+
+
 
 }

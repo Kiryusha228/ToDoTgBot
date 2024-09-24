@@ -1,6 +1,5 @@
 package org.example.tgbot.props;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;

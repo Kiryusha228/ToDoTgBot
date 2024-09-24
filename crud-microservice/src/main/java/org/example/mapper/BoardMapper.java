@@ -5,7 +5,6 @@ import org.example.model.entity.BoardEntity;
 import org.example.model.entity.TodoEntity;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class BoardMapper {
     public static BoardDto ToBoardDto(BoardEntity boardEntity) {

@@ -6,9 +6,14 @@ import java.util.List;
 
 public interface TodoService {
     List<TodoDto> getTodosByBoardId(Long boardId);
+    TodoDto getTodoById(Long todoId);
+
     void switchTodoDone(Long todoId);
+
     void deleteTodo(Long todoId);
+
     void updateTodoInfo(Long todoId, String title, String description);
+
     void addTodo(TodoDto todoDto);
 
 }

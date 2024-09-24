@@ -1,10 +1,12 @@
 package org.example.tgbot.service;
 
 
+import org.example.tgbot.buttons.InlineButtons;
 import org.example.tgbot.model.dto.BoardDto;
 import org.example.tgbot.props.TgBotProperties;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -36,50 +38,88 @@ public class TgBotService extends TelegramLongPollingBot {
         if (update.hasMessage() && update.getMessage().hasText()) {
             var text = update.getMessage().getText();
 
-            if (Pattern.matches("^add.+", text)) {
-                crudService.addBoard(new BoardDto(0L, update.getMessage().getChatId(), text.substring(3)));
-                executeMessage(InlineButtons.sendBoards(update.getMessage().getChatId(), crudService.getBoards(update.getMessage().getChatId())));
-            }
-
             if (text.equals("Посмотреть доски")) {
                 executeMessage(InlineButtons.sendBoards(update.getMessage().getChatId(), crudService.getBoards(update.getMessage().getChatId())));
             }
         }
         if (update.hasCallbackQuery()) {
 
-            var callbackData = update.getCallbackQuery().getData();
+            var callbackQuery = update.getCallbackQuery();
+            var chatId = callbackQuery.getMessage().getChatId();
+            var callbackData = callbackQuery.getData();
 
-            if (Pattern.matches("^board:\\d+", callbackData)){
+            if (Pattern.matches("^board:\\d+", callbackData)) {
                 var todos = crudService.getTodos(Long.parseLong(callbackData.split(":")[1]));
-                executeMessage(InlineButtons.sendTodos(update.getCallbackQuery().getMessage().getChatId(), todos));
+                executeMessage(InlineButtons.sendTodos(chatId, todos));
             }
 
-            if (Pattern.matches("^todo:\\d+:\\d+", callbackData)){
+            if (Pattern.matches("^deleteboard:\\d+", callbackData)) {
+                //executeMessage(InlineButtons.sendDeleteAlert(chatId, "board", callbackData.split(":")[1]));
+                crudService.deleteBoard(Long.parseLong(callbackData.split(":")[1]));
+                executeMessage(InlineButtons.sendBoards(chatId, crudService.getBoards(chatId)));
+            }
+
+            if (Pattern.matches("^todo:\\d+:\\d+", callbackData)) {
                 var todoId = Long.parseLong(callbackData.split(":")[1]);
                 var boardId = Long.parseLong(callbackData.split(":")[2]);
 
                 crudService.switchTodoDone(todoId);
                 var todos = crudService.getTodos(boardId);
 
-                executeMessage(InlineButtons.sendTodos(update.getCallbackQuery().getMessage().getChatId(), todos));
+                executeMessage(InlineButtons.sendTodos(chatId, todos));
             }
 
-            if (callbackData.equals("addboard")){
+            if (Pattern.matches("^infotodo:\\d+", callbackData)) {
+                var todoId = Long.parseLong(callbackData.split(":")[1]);
+                var todo = crudService.getTodoById(todoId);
+
+                AnswerCallbackQuery answerCallbackQuery = new AnswerCallbackQuery();
+                answerCallbackQuery.setCallbackQueryId(callbackQuery.getId());
+                answerCallbackQuery.setShowAlert(true);
+                answerCallbackQuery.setText("Дело: " + todo.getTitle() + "\nОписание: " + todo.getDescription());
+
+                executeAnswer(answerCallbackQuery);
+            }
+
+            if (Pattern.matches("^deletetodo:\\d+:\\d+", callbackData)) {
+
+                var todoId = Long.parseLong(callbackData.split(":")[1]);
+                var boardId = Long.parseLong(callbackData.split(":")[2]);
+                crudService.deleteTodo(todoId);
+
+                var todos = crudService.getTodos(boardId);
+                executeMessage(InlineButtons.sendTodos(chatId, todos));
+                //var todoId = callbackData.split(":")[1];
+                //var boardId = callbackData.split(":")[2];
+
+                //executeMessage(InlineButtons.sendDeleteAlert(chatId, "todo", todoId + ":" +boardId ));
+
+
+            }
+
+            if (callbackData.equals("addboard")) {
 
                 var addMessage = new SendMessage();
                 addMessage.setChatId(update.getCallbackQuery().getMessage().getChatId());
                 addMessage.setText("Введите название новой доски в формате \"addНазвание доски\"");
                 executeMessage(addMessage);
-
-                //crudService.addBoard(new BoardDto(0L, update.getMessage().getChatId(), ));
-
-                //executeMessage(InlineButtons.sendBoards(update.getMessage().getChatId(), crudService.getBoards(update.getMessage().getChatId())));
             }
 
-            //var message = new SendMessage();
-            //message.setChatId(update.getCallbackQuery().getMessage().getChatId());
-            //message.setText(update.getCallbackQuery().getData());
-
+//            if (Pattern.matches("^confirmdelete:\\D+:\\d+:", callbackData)) {
+//                var element = callbackData.split(":")[1];
+//                if (element.equals("board")){
+//                    crudService.deleteBoard(Long.parseLong(callbackData.split(":")[2]));
+//                    executeMessage(InlineButtons.sendBoards(chatId, crudService.getBoards(chatId)));
+//                }
+//                else {
+//                    var todoId = Long.parseLong(callbackData.split(":")[2]);
+//                    var boardId = Long.parseLong(callbackData.split(":")[3]);
+//                    crudService.deleteTodo(todoId);
+//
+//                    var todos = crudService.getTodos(boardId);
+//                    executeMessage(InlineButtons.sendTodos(chatId, todos));
+//                }
+//            }
 
         }
     }
@@ -87,12 +127,18 @@ public class TgBotService extends TelegramLongPollingBot {
     private void executeMessage(SendMessage message) {
         try {
             execute(message);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    private void executeAnswer(AnswerCallbackQuery answerCallbackQuery) {
+        try {
+            execute(answerCallbackQuery);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 
     private void sendMiniAppMessage(long chatId) {

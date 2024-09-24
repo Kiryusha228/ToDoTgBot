@@ -18,9 +18,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.projectlombok:lombok:1.18.34")
     annotationProcessor("org.projectlombok:lombok:1.18.34")
-    implementation ("org.postgresql:postgresql")
-    implementation ("org.hibernate:hibernate-core:5.6.0.Final")
-    implementation ("jakarta.persistence:jakarta.persistence-api:2.2.3")
+    implementation("org.postgresql:postgresql")
+    implementation("org.hibernate:hibernate-core:5.6.0.Final")
+    implementation("jakarta.persistence:jakarta.persistence-api:2.2.3")
 }
 
 tasks.test {

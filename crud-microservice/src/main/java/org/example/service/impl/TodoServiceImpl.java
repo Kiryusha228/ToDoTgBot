@@ -1,7 +1,6 @@
 package org.example.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.example.mapper.BoardMapper;
 import org.example.mapper.TodoMapper;
 import org.example.model.dto.TodoDto;
 import org.example.repository.BoardRepository;
@@ -20,9 +19,15 @@ public class TodoServiceImpl implements TodoService {
     @Override
     public List<TodoDto> getTodosByBoardId(Long boardId) {
         var todos = todoRepository.findAll().stream()
-                .filter(todo -> todo.getBoard().getId().equals(boardId)).toList();
+                .filter(todo -> todo.getBoard().getId().equals(boardId))
+                .toList();
 
         return todos.stream().map(TodoMapper::ToTodoDto).toList();
+    }
+
+    @Override
+    public TodoDto getTodoById(Long todoId) {
+        return TodoMapper.ToTodoDto(todoRepository.findById(todoId).get());
     }
 
     @Override

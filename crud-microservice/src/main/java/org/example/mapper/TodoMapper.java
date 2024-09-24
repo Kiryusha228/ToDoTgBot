@@ -11,7 +11,7 @@ public class TodoMapper {
                 todoEntity.getDone());
     }
 
-    public static TodoEntity ToTodoEntity(TodoDto todoDto, BoardEntity board){
+    public static TodoEntity ToTodoEntity(TodoDto todoDto, BoardEntity board) {
         return new TodoEntity(todoDto.getId(), todoDto.getTitle(),
                 todoDto.getDescription(), todoDto.getDone(), board);
     }

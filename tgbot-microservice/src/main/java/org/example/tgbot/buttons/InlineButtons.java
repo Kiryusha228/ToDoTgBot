@@ -1,4 +1,4 @@
-package org.example.tgbot.service;
+package org.example.tgbot.buttons;
 
 import org.example.tgbot.model.dto.BoardDto;
 import org.example.tgbot.model.dto.TodoDto;
@@ -97,10 +97,9 @@ public class InlineButtons {
         List<InlineKeyboardButton> todoRow = new ArrayList<>();
 
         var button = new InlineKeyboardButton();
-        if (todo.getDone()){
+        if (todo.getDone()) {
             button.setText("✅" + todo.getTitle());
-        }
-        else {
+        } else {
             button.setText(todo.getTitle());
         }
         button.setCallbackData("todo:" + todo.getId().toString() + ":" + todo.getBoardId());
@@ -119,11 +118,38 @@ public class InlineButtons {
         buttonEdit.setCallbackData("edittodo:" + todo.getId());
 
         var buttonDelete = new InlineKeyboardButton("❌");
-        buttonDelete.setCallbackData("deletetodo:" + todo.getId());
+        buttonDelete.setCallbackData("deletetodo:" + todo.getId().toString() + ":" + todo.getBoardId());
 
         todoRow.add(buttonInfo);
         todoRow.add(buttonEdit);
         todoRow.add(buttonDelete);
         return todoRow;
+    }
+
+    public static SendMessage sendDeleteAlert(Long chatId, String elementType, String elementId) {
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId.toString());
+        message.setText("Вы уверены, что хотите удалить эту запись?");
+
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        InlineKeyboardButton confirmButton = new InlineKeyboardButton();
+        confirmButton.setText("Удалить");
+        confirmButton.setCallbackData("confirmdelete:" + elementType + ":" + elementId);
+
+        InlineKeyboardButton cancelButton = new InlineKeyboardButton();
+        cancelButton.setText("Отмена");
+        cancelButton.setCallbackData("canceldelete");
+
+        List<InlineKeyboardButton> keyboardButtonsRow = new ArrayList<>();
+        keyboardButtonsRow.add(confirmButton);
+        keyboardButtonsRow.add(cancelButton);
+
+        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
+        rowList.add(keyboardButtonsRow);
+        inlineKeyboardMarkup.setKeyboard(rowList);
+
+        message.setReplyMarkup(inlineKeyboardMarkup);
+
+        return message;
     }
 }
