@@ -2,21 +2,16 @@ package org.example.tgbot.service;
 
 
 import org.example.tgbot.buttons.InlineButtons;
-import org.example.tgbot.model.dto.BoardDto;
+import org.example.tgbot.model.dto.LastMessageDto;
 import org.example.tgbot.props.TgBotProperties;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Pattern;
 
 @Service
@@ -37,9 +32,19 @@ public class TgBotService extends TelegramLongPollingBot {
 
         if (update.hasMessage() && update.getMessage().hasText()) {
             var text = update.getMessage().getText();
+            var chatId = update.getMessage().getChatId();
+            if (text.equals("/start")){
+                crudService.createLastMessage(chatId);
+                executeMessage(InlineButtons.createInlineKeyboard(chatId));
+            }
 
             if (text.equals("Посмотреть доски")) {
-                executeMessage(InlineButtons.sendBoards(update.getMessage().getChatId(), crudService.getBoards(update.getMessage().getChatId())));
+                var lastMessageId = crudService.getLastMessage(chatId);
+                if (lastMessageId != null){
+                    deleteMessage(chatId, lastMessageId);
+                }
+                var messageId = executeMessage(InlineButtons.sendBoards(update.getMessage().getChatId(), crudService.getBoards(update.getMessage().getChatId())));
+                crudService.setLastMessage(new LastMessageDto(chatId,messageId));
             }
         }
         if (update.hasCallbackQuery()) {
@@ -50,13 +55,30 @@ public class TgBotService extends TelegramLongPollingBot {
 
             if (Pattern.matches("^board:\\d+", callbackData)) {
                 var todos = crudService.getTodos(Long.parseLong(callbackData.split(":")[1]));
-                executeMessage(InlineButtons.sendTodos(chatId, todos));
+
+                var lastMessageId = crudService.getLastMessage(chatId);
+                if (lastMessageId != null){
+                    deleteMessage(chatId, lastMessageId);
+                }
+                var messageId = executeMessage(InlineButtons.sendTodos(chatId, todos));
+
+                crudService.setLastMessage(new LastMessageDto(chatId,messageId));
+
             }
 
             if (Pattern.matches("^deleteboard:\\d+", callbackData)) {
                 //executeMessage(InlineButtons.sendDeleteAlert(chatId, "board", callbackData.split(":")[1]));
                 crudService.deleteBoard(Long.parseLong(callbackData.split(":")[1]));
-                executeMessage(InlineButtons.sendBoards(chatId, crudService.getBoards(chatId)));
+
+                var lastMessageId = crudService.getLastMessage(chatId);
+                if (lastMessageId != null){
+                    deleteMessage(chatId, lastMessageId);
+                }
+
+                var messageId = executeMessage(InlineButtons.sendBoards(chatId, crudService.getBoards(chatId)));
+
+                crudService.setLastMessage(new LastMessageDto(chatId,messageId));
+
             }
 
             if (Pattern.matches("^todo:\\d+:\\d+", callbackData)) {
@@ -66,7 +88,17 @@ public class TgBotService extends TelegramLongPollingBot {
                 crudService.switchTodoDone(todoId);
                 var todos = crudService.getTodos(boardId);
 
-                executeMessage(InlineButtons.sendTodos(chatId, todos));
+
+                var lastMessageId = crudService.getLastMessage(chatId);
+                if (lastMessageId != null){
+                    deleteMessage(chatId, lastMessageId);
+                }
+
+                var messageId = executeMessage(InlineButtons.sendTodos(chatId, todos));
+
+                crudService.setLastMessage(new LastMessageDto(chatId,messageId));
+
+
             }
 
             if (Pattern.matches("^infotodo:\\d+", callbackData)) {
@@ -88,7 +120,17 @@ public class TgBotService extends TelegramLongPollingBot {
                 crudService.deleteTodo(todoId);
 
                 var todos = crudService.getTodos(boardId);
-                executeMessage(InlineButtons.sendTodos(chatId, todos));
+
+
+                var lastMessageId = crudService.getLastMessage(chatId);
+                if (lastMessageId != null){
+                    deleteMessage(chatId, lastMessageId);
+                }
+
+                var messageId = executeMessage(InlineButtons.sendTodos(chatId, todos));
+
+                crudService.setLastMessage(new LastMessageDto(chatId,messageId));
+
                 //var todoId = callbackData.split(":")[1];
                 //var boardId = callbackData.split(":")[2];
 
@@ -124,12 +166,14 @@ public class TgBotService extends TelegramLongPollingBot {
         }
     }
 
-    private void executeMessage(SendMessage message) {
+    private Integer executeMessage(SendMessage message) {
+        Message sentMessage = new Message();
         try {
-            execute(message);
+            sentMessage = execute(message);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return sentMessage.getMessageId();
     }
 
     private void executeAnswer(AnswerCallbackQuery answerCallbackQuery) {
@@ -140,44 +184,17 @@ public class TgBotService extends TelegramLongPollingBot {
         }
     }
 
-
-    private void sendMiniAppMessage(long chatId) {
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId);
-        message.setText("Запустить мини-приложение");
-
-        InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
-
-        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-        List<InlineKeyboardButton> rowInline1 = new ArrayList<>();
-
-        var button = new InlineKeyboardButton("Доска 1");
-        button.setCallbackData("checkedButton");
-        var data = button.getCallbackData();
-
-        rowInline1.add(button);
-        rowsInline.add(rowInline1);
-        markupInline.setKeyboard(rowsInline);
-
-        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
-        List<KeyboardRow> keyboard = new ArrayList<>();
-
-        KeyboardRow row1 = new KeyboardRow();
-        row1.add(new KeyboardButton("Посмотреть доски"));
-        keyboard.add(row1);
-
-        keyboardMarkup.setKeyboard(keyboard);
-        keyboardMarkup.setResizeKeyboard(true); // Уменьшить клавиатуру до размера кнопок
-        keyboardMarkup.setOneTimeKeyboard(false); // Показывать клавиатуру при каждом сообщении
+    private void deleteMessage(Long chatId, Integer messageId){
+        DeleteMessage deleteMessage = new DeleteMessage();
+        deleteMessage.setChatId(chatId);
+        deleteMessage.setMessageId(messageId);
 
         try {
-
-            message.setReplyMarkup(keyboardMarkup);
-            message.setReplyMarkup(markupInline);
-            execute(message);
+            execute(deleteMessage);
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     @Override

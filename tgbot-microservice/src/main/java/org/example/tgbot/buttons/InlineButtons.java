@@ -4,7 +4,10 @@ import org.example.tgbot.model.dto.BoardDto;
 import org.example.tgbot.model.dto.TodoDto;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -149,6 +152,28 @@ public class InlineButtons {
         inlineKeyboardMarkup.setKeyboard(rowList);
 
         message.setReplyMarkup(inlineKeyboardMarkup);
+
+        return message;
+    }
+
+    public static SendMessage createInlineKeyboard(long chatId) {
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText("Выберите действие:");
+
+        // Создаем клавиатуру
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        replyKeyboardMarkup.setResizeKeyboard(true);
+        replyKeyboardMarkup.setOneTimeKeyboard(false);
+
+        KeyboardRow row = new KeyboardRow();
+        row.add(new KeyboardButton("Посмотреть доски"));
+
+        List<KeyboardRow> keyboard = new ArrayList<>();
+        keyboard.add(row);
+
+        replyKeyboardMarkup.setKeyboard(keyboard);
+        message.setReplyMarkup(replyKeyboardMarkup);
 
         return message;
     }

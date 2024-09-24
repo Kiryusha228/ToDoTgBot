@@ -2,6 +2,7 @@ package org.example.tgbot.service;
 
 import lombok.AllArgsConstructor;
 import org.example.tgbot.model.dto.BoardDto;
+import org.example.tgbot.model.dto.LastMessageDto;
 import org.example.tgbot.model.dto.TodoDto;
 import org.example.tgbot.props.LinkProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,9 +55,23 @@ public class CrudService {
         var uri = UriComponentsBuilder.fromUriString(linkProperties.getCrudMicroserviceUrl() + "/todo/switch")
                 .queryParam("todoId", todoId).toUriString();
         restTemplate.put(uri, void.class);
-        //restTemplate.patchForObject(uri, null, Void.class);
     }
 
+    public void createLastMessage(Long userChatId) {
+        var uri = UriComponentsBuilder.fromUriString(linkProperties.getCrudMicroserviceUrl() + "/message/create")
+                .queryParam("userChatId", userChatId).toUriString();
+        restTemplate.postForObject(uri, void.class, void.class);
+    }
 
+    public void setLastMessage(LastMessageDto lastMessageDto) {
+        var uri = UriComponentsBuilder.fromUriString(linkProperties.getCrudMicroserviceUrl() + "/message/set")
+                .toUriString();
+        restTemplate.put(uri, lastMessageDto);
+    }
 
+    public Integer getLastMessage(Long userChatId) {
+        var uri = UriComponentsBuilder.fromUriString(linkProperties.getCrudMicroserviceUrl() + "/message")
+                .queryParam("userChatId", userChatId).toUriString();
+        return restTemplate.getForObject(uri, Integer.class);
+    }
 }
