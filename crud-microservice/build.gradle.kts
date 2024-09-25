@@ -3,6 +3,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.6"
     id("java")
 }
+
 group = "org.example"
 version = "1.0-SNAPSHOT"
 

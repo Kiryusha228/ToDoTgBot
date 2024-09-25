@@ -15,3 +15,18 @@ services:
       - 'POSTGRES_DB=db_todo'
     volumes:
       - todo:/var/lib/postgresql/data
+  crud:
+    container_name: 'crud'
+    image: 'crud'
+    build:
+      context: ./
+      dockerfile: 'crud-microservice/Dockerfile'
+    environment:
+      - JAVA_OPTS=-Xmx512M
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://todo:5432/db_todo
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgrespw
+    ports:
+      - "8080:8080"
+    restart: on-failure
+
