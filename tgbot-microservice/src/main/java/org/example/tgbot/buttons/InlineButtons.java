@@ -120,7 +120,7 @@ public class InlineButtons {
         buttonInfo.setCallbackData("infotodo:" + todo.getId());
 
         var buttonEdit = new InlineKeyboardButton("\uD83D\uDCDD");
-        buttonEdit.setCallbackData("edittodo:" + todo.getId());
+        //buttonEdit.setCallbackData("edittodo:" + todo.getId());
         buttonEdit.setWebApp(new WebAppInfo("https://golubvasya.ru/todo/update/" + todo.getId()));
 
         var buttonDelete = new InlineKeyboardButton("❌");
