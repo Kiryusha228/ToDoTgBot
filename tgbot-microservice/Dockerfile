@@ -22,7 +22,7 @@ FROM openjdk:17-slim
 WORKDIR /app
 
 # Копируем собранный JAR из предыдущего этапа
-COPY --from=build /app/build/libs/*.jar app.jar
+COPY --from=build /app/tgbot-microservice/build/libs/*.jar app/tgbot-microservice/app.jar
 
 # Команда для запуска приложения
-CMD ["java", "-jar", "app.jar"]
+CMD ["java", "-jar", "app/tgbot-microservice/app.jar"]

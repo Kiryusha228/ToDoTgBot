@@ -9,6 +9,8 @@ services:
     container_name: 'todo'
     ports:
       - "5432:5432"
+    env_file:
+      - .env
     environment:
       - 'POSTGRES_USER=${SPRING_DATASOURCE_USERNAME}'
       - 'POSTGRES_PASSWORD=${SPRING_DATASOURCE_PASSWORD}'
@@ -21,6 +23,8 @@ services:
     build:
       context: ./
       dockerfile: 'crud-microservice/Dockerfile'
+    env_file:
+      - .env
     environment:
       - JAVA_OPTS=-Xmx512M
       - SPRING_DATASOURCE_URL=jdbc:postgresql://todo:5432/db_todo
@@ -36,6 +40,8 @@ services:
     build:
       context: ./
       dockerfile: 'tgbot-microservice/Dockerfile'
+    env_file:
+      - .env
     environment:
       - JAVA_OPTS=-Xmx512M
       - BOT_NAME=${BOT_NAME}
