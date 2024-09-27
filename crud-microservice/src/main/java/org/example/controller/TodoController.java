@@ -13,6 +13,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("todo")
+@CrossOrigin(origins = {"*"})
 public class TodoController {
     @Autowired
     private final TodoService todoService;

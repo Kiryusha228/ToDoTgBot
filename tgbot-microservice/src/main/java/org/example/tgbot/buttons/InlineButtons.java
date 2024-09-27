@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+import org.telegram.telegrambots.meta.api.objects.webapp.WebAppInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,7 @@ public class InlineButtons {
         List<InlineKeyboardButton> addRow = new ArrayList<>();
 
         var addButton = new InlineKeyboardButton("➕ Добавить доску");
-        addButton.setCallbackData("addboard");
+        addButton.setWebApp(new WebAppInfo("https://golubvasya.ru/board/add/" + chatId));
 
         addRow.add(addButton);
 
@@ -57,7 +58,7 @@ public class InlineButtons {
         List<InlineKeyboardButton> boardRow = new ArrayList<>();
 
         var buttonEdit = new InlineKeyboardButton("\uD83D\uDCDD");
-        buttonEdit.setCallbackData("editboard:" + board.getId());
+        buttonEdit.setWebApp(new WebAppInfo("https://golubvasya.ru/board/update/" + board.getId()));
 
         var buttonDelete = new InlineKeyboardButton("❌");
         buttonDelete.setCallbackData("deleteboard:" + board.getId());
@@ -67,7 +68,7 @@ public class InlineButtons {
         return boardRow;
     }
 
-    public static SendMessage sendTodos(Long chatId, List<TodoDto> todos) {
+    public static SendMessage sendTodos(Long chatId, List<TodoDto> todos, Long boardId) {
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
         message.setText("Ваши дела:");
@@ -84,7 +85,8 @@ public class InlineButtons {
         List<InlineKeyboardButton> addRow = new ArrayList<>();
 
         var addButton = new InlineKeyboardButton("➕ Добавить дело");
-        addButton.setCallbackData("addtodo");
+        //addButton.setCallbackData("addtodo");
+        addButton.setWebApp(new WebAppInfo("https://golubvasya.ru/todo/add/" + boardId));
 
         addRow.add(addButton);
 
@@ -119,6 +121,7 @@ public class InlineButtons {
 
         var buttonEdit = new InlineKeyboardButton("\uD83D\uDCDD");
         buttonEdit.setCallbackData("edittodo:" + todo.getId());
+        buttonEdit.setWebApp(new WebAppInfo("https://golubvasya.ru/todo/update/" + todo.getId()));
 
         var buttonDelete = new InlineKeyboardButton("❌");
         buttonDelete.setCallbackData("deletetodo:" + todo.getId().toString() + ":" + todo.getBoardId());

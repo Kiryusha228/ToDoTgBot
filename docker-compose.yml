@@ -10,8 +10,8 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - 'POSTGRES_USER=postgres'
-      - 'POSTGRES_PASSWORD=postgrespw'
+      - 'POSTGRES_USER=${SPRING_DATASOURCE_USERNAME}'
+      - 'POSTGRES_PASSWORD=${SPRING_DATASOURCE_PASSWORD}'
       - 'POSTGRES_DB=db_todo'
     volumes:
       - todo:/var/lib/postgresql/data
@@ -24,9 +24,24 @@ services:
     environment:
       - JAVA_OPTS=-Xmx512M
       - SPRING_DATASOURCE_URL=jdbc:postgresql://todo:5432/db_todo
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgrespw
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
     ports:
       - "8080:8080"
+    restart: on-failure
+
+  telegram-bot:
+    container_name: 'telegram-bot'
+    image: 'telegram-bot'
+    build:
+      context: ./
+      dockerfile: 'Dockerfile'
+    environment:
+      - JAVA_OPTS=-Xmx512M
+      - BOT_NAME=${BOT_NAME}
+      - BOT_TOKEN=${BOT_TOKEN}
+      - TODO_API_URL=${TODO_API_URL}
+    ports:
+      - "8081:8081"
     restart: on-failure
 

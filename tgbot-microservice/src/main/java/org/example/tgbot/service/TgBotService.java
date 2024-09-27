@@ -11,7 +11,12 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.webapp.WebAppInfo;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 @Service
@@ -29,7 +34,6 @@ public class TgBotService extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-
         if (update.hasMessage() && update.getMessage().hasText()) {
             var text = update.getMessage().getText();
             var chatId = update.getMessage().getChatId();
@@ -47,6 +51,7 @@ public class TgBotService extends TelegramLongPollingBot {
                 crudService.setLastMessage(new LastMessageDto(chatId,messageId));
             }
         }
+
         if (update.hasCallbackQuery()) {
 
             var callbackQuery = update.getCallbackQuery();
@@ -54,19 +59,19 @@ public class TgBotService extends TelegramLongPollingBot {
             var callbackData = callbackQuery.getData();
 
             if (Pattern.matches("^board:\\d+", callbackData)) {
-                var todos = crudService.getTodos(Long.parseLong(callbackData.split(":")[1]));
+                var boardId = Long.parseLong(callbackData.split(":")[1]);
+                var todos = crudService.getTodos(boardId);
 
                 var lastMessageId = crudService.getLastMessage(chatId);
                 if (lastMessageId != null){
                     deleteMessage(chatId, lastMessageId);
                 }
-                var messageId = executeMessage(InlineButtons.sendTodos(chatId, todos));
+                var messageId = executeMessage(InlineButtons.sendTodos(chatId, todos, boardId));
 
                 crudService.setLastMessage(new LastMessageDto(chatId,messageId));
 
             }
-
-            if (Pattern.matches("^deleteboard:\\d+", callbackData)) {
+            else if (Pattern.matches("^deleteboard:\\d+", callbackData)) {
                 //executeMessage(InlineButtons.sendDeleteAlert(chatId, "board", callbackData.split(":")[1]));
                 crudService.deleteBoard(Long.parseLong(callbackData.split(":")[1]));
 
@@ -80,8 +85,7 @@ public class TgBotService extends TelegramLongPollingBot {
                 crudService.setLastMessage(new LastMessageDto(chatId,messageId));
 
             }
-
-            if (Pattern.matches("^todo:\\d+:\\d+", callbackData)) {
+            else if (Pattern.matches("^todo:\\d+:\\d+", callbackData)) {
                 var todoId = Long.parseLong(callbackData.split(":")[1]);
                 var boardId = Long.parseLong(callbackData.split(":")[2]);
 
@@ -94,14 +98,13 @@ public class TgBotService extends TelegramLongPollingBot {
                     deleteMessage(chatId, lastMessageId);
                 }
 
-                var messageId = executeMessage(InlineButtons.sendTodos(chatId, todos));
+                var messageId = executeMessage(InlineButtons.sendTodos(chatId, todos, boardId));
 
                 crudService.setLastMessage(new LastMessageDto(chatId,messageId));
 
 
             }
-
-            if (Pattern.matches("^infotodo:\\d+", callbackData)) {
+            else if (Pattern.matches("^infotodo:\\d+", callbackData)) {
                 var todoId = Long.parseLong(callbackData.split(":")[1]);
                 var todo = crudService.getTodoById(todoId);
 
@@ -113,7 +116,7 @@ public class TgBotService extends TelegramLongPollingBot {
                 executeAnswer(answerCallbackQuery);
             }
 
-            if (Pattern.matches("^deletetodo:\\d+:\\d+", callbackData)) {
+            else if (Pattern.matches("^deletetodo:\\d+:\\d+", callbackData)) {
 
                 var todoId = Long.parseLong(callbackData.split(":")[1]);
                 var boardId = Long.parseLong(callbackData.split(":")[2]);
@@ -127,42 +130,10 @@ public class TgBotService extends TelegramLongPollingBot {
                     deleteMessage(chatId, lastMessageId);
                 }
 
-                var messageId = executeMessage(InlineButtons.sendTodos(chatId, todos));
+                var messageId = executeMessage(InlineButtons.sendTodos(chatId, todos, boardId));
 
                 crudService.setLastMessage(new LastMessageDto(chatId,messageId));
-
-                //var todoId = callbackData.split(":")[1];
-                //var boardId = callbackData.split(":")[2];
-
-                //executeMessage(InlineButtons.sendDeleteAlert(chatId, "todo", todoId + ":" +boardId ));
-
-
             }
-
-            if (callbackData.equals("addboard")) {
-
-                var addMessage = new SendMessage();
-                addMessage.setChatId(update.getCallbackQuery().getMessage().getChatId());
-                addMessage.setText("Введите название новой доски в формате \"addНазвание доски\"");
-                executeMessage(addMessage);
-            }
-
-//            if (Pattern.matches("^confirmdelete:\\D+:\\d+:", callbackData)) {
-//                var element = callbackData.split(":")[1];
-//                if (element.equals("board")){
-//                    crudService.deleteBoard(Long.parseLong(callbackData.split(":")[2]));
-//                    executeMessage(InlineButtons.sendBoards(chatId, crudService.getBoards(chatId)));
-//                }
-//                else {
-//                    var todoId = Long.parseLong(callbackData.split(":")[2]);
-//                    var boardId = Long.parseLong(callbackData.split(":")[3]);
-//                    crudService.deleteTodo(todoId);
-//
-//                    var todos = crudService.getTodos(boardId);
-//                    executeMessage(InlineButtons.sendTodos(chatId, todos));
-//                }
-//            }
-
         }
     }
 
@@ -201,6 +172,7 @@ public class TgBotService extends TelegramLongPollingBot {
     public String getBotUsername() {
         return tgBotProperties.getName();
     }
+
 
 
 }
