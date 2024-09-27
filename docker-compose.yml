@@ -35,7 +35,7 @@ services:
     image: 'telegram-bot'
     build:
       context: ./
-      dockerfile: 'Dockerfile'
+      dockerfile: 'tgbot-microservice/Dockerfile'
     environment:
       - JAVA_OPTS=-Xmx512M
       - BOT_NAME=${BOT_NAME}

@@ -9,7 +9,8 @@ COPY build.gradle.kts build.gradle.kts
 COPY settings.gradle.kts settings.gradle.kts
 
 # Копируем исходный код
-COPY src src
+COPY tgbot-microservice/src tgbot-microservice/src
+COPY tgbot-microservice/build.gradle.kts tgbot-microservice/build.gradle.kts
 
 # Собираем проект
 RUN gradle build --no-daemon

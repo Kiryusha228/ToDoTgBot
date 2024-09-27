@@ -11,7 +11,7 @@ COPY settings.gradle.kts settings.gradle.kts
 COPY crud-microservice/src crud-microservice/src
 COPY crud-microservice/build.gradle.kts crud-microservice/build.gradle.kts
 
-RUN gradle crud-microservice:build #--no-deamon
+RUN gradle crud-microservice:build --no-daemon
 
 FROM openjdk:17-slim
 
