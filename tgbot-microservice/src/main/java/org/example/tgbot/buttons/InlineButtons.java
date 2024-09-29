@@ -31,7 +31,7 @@ public class InlineButtons {
 
         List<InlineKeyboardButton> optionsRow = new ArrayList<>();
 
-        var updateButton = new InlineKeyboardButton("\uD83D\uDD19");
+        var updateButton = new InlineKeyboardButton("\uD83D\uDD04");
         updateButton.setCallbackData("showboards");
 
         var addButton = new InlineKeyboardButton("➕");
@@ -88,7 +88,7 @@ public class InlineButtons {
 
         List<InlineKeyboardButton> optionsRow = new ArrayList<>();
 
-        var backButton = new InlineKeyboardButton("\uD83D\uDD19");
+        var backButton = new InlineKeyboardButton("\uD83D\uDD04");
         backButton.setCallbackData("showboards");
 
         var updateButton = new InlineKeyboardButton("\uD83D\uDD19");

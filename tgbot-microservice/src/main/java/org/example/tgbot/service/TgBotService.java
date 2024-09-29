@@ -47,7 +47,7 @@ public class TgBotService extends TelegramLongPollingBot {
                 if (lastMessageId != null){
                     deleteMessage(chatId, lastMessageId);
                 }
-                var messageId = executeMessage(InlineButtons.sendBoards(update.getMessage().getChatId(), crudService.getBoards(update.getMessage().getChatId())));
+                var messageId = executeMessage(InlineButtons.sendBoards(chatId, crudService.getBoards(chatId)));
                 crudService.setLastMessage(new LastMessageDto(chatId,messageId));
             }
         }
@@ -140,7 +140,7 @@ public class TgBotService extends TelegramLongPollingBot {
                 if (lastMessageId != null){
                     deleteMessage(chatId, lastMessageId);
                 }
-                var messageId = executeMessage(InlineButtons.sendBoards(update.getMessage().getChatId(), crudService.getBoards(update.getMessage().getChatId())));
+                var messageId = executeMessage(InlineButtons.sendBoards(chatId, crudService.getBoards(chatId)));
                 crudService.setLastMessage(new LastMessageDto(chatId,messageId));
             }
         }
