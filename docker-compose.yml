@@ -17,6 +17,7 @@ services:
       - 'POSTGRES_DB=db_todo'
     volumes:
       - todo:/var/lib/postgresql/data
+
   crud:
     container_name: 'crud'
     image: 'crud'
@@ -55,15 +56,15 @@ services:
     container_name: 'todo-front'
     image: 'todo-front'
     build:
-      dockerfile: 'todo-front/Dockerfile'
+      context: ./todo-front
+      dockerfile: 'Dockerfile'
     env_file:
       - .env
     ports:
       - "443:443"
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./todo-front/nginx.conf:/etc/nginx/conf.d/default.conf
       - /etc/letsencrypt:/etc/letsencrypt
     environment:
       - REACT_APP_CRUD_API_URL=${TODO_API_URL}
     restart: always
-
