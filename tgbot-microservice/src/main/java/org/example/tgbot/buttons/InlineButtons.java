@@ -88,10 +88,10 @@ public class InlineButtons {
 
         List<InlineKeyboardButton> optionsRow = new ArrayList<>();
 
-        var backButton = new InlineKeyboardButton("\uD83D\uDD04");
+        var backButton = new InlineKeyboardButton("\uD83D\uDD19");
         backButton.setCallbackData("showboards");
 
-        var updateButton = new InlineKeyboardButton("\uD83D\uDD19");
+        var updateButton = new InlineKeyboardButton("\uD83D\uDD04");
         updateButton.setCallbackData("board:" + boardId);
 
         var addButton = new InlineKeyboardButton("➕");
