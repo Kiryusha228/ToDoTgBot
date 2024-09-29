@@ -29,14 +29,18 @@ public class InlineButtons {
             rowsInline.add(getInlineKeyboardButtonsActionsForBoard(board));
         }
 
-        List<InlineKeyboardButton> addRow = new ArrayList<>();
+        List<InlineKeyboardButton> optionsRow = new ArrayList<>();
 
-        var addButton = new InlineKeyboardButton("➕ Добавить доску");
+        var updateButton = new InlineKeyboardButton("\uD83D\uDD19");
+        updateButton.setCallbackData("showboards");
+
+        var addButton = new InlineKeyboardButton("➕");
         addButton.setWebApp(new WebAppInfo("https://golubvasya.ru/board/add/" + chatId));
 
-        addRow.add(addButton);
+        optionsRow.add(updateButton);
+        optionsRow.add(addButton);
 
-        rowsInline.add(addRow);
+        rowsInline.add(optionsRow);
 
         markupInline.setKeyboard(rowsInline);
         message.setReplyMarkup(markupInline);
@@ -82,15 +86,23 @@ public class InlineButtons {
             rowsInline.add(getInlineKeyboardButtonsActionsForTodo(todo));
         }
 
-        List<InlineKeyboardButton> addRow = new ArrayList<>();
+        List<InlineKeyboardButton> optionsRow = new ArrayList<>();
 
-        var addButton = new InlineKeyboardButton("➕ Добавить дело");
-        //addButton.setCallbackData("addtodo");
+        var backButton = new InlineKeyboardButton("\uD83D\uDD19");
+        backButton.setCallbackData("showboards");
+
+        var updateButton = new InlineKeyboardButton("\uD83D\uDD19");
+        updateButton.setCallbackData("board:" + boardId);
+
+        var addButton = new InlineKeyboardButton("➕");
         addButton.setWebApp(new WebAppInfo("https://golubvasya.ru/todo/add/" + boardId));
 
-        addRow.add(addButton);
 
-        rowsInline.add(addRow);
+        optionsRow.add(backButton);
+        optionsRow.add(updateButton);
+        optionsRow.add(addButton);
+
+        rowsInline.add(optionsRow);
 
         markupInline.setKeyboard(rowsInline);
         message.setReplyMarkup(markupInline);

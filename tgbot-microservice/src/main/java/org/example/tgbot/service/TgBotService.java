@@ -134,6 +134,15 @@ public class TgBotService extends TelegramLongPollingBot {
 
                 crudService.setLastMessage(new LastMessageDto(chatId,messageId));
             }
+
+            if (callbackData.equals("showboards")) {
+                var lastMessageId = crudService.getLastMessage(chatId);
+                if (lastMessageId != null){
+                    deleteMessage(chatId, lastMessageId);
+                }
+                var messageId = executeMessage(InlineButtons.sendBoards(update.getMessage().getChatId(), crudService.getBoards(update.getMessage().getChatId())));
+                crudService.setLastMessage(new LastMessageDto(chatId,messageId));
+            }
         }
     }
 
